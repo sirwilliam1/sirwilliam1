@@ -1,3 +1,30 @@
+<#
+.SYNOPSIS
+    This PowerShell script sets a requiring logon will ensure the device is only used by authorized personnel..
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-08
+    Last Modified   : 2025-09-08
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-CC-000005
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-CC-000005.ps3 
+#>
+
 # Define the registry path
 $registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
 
