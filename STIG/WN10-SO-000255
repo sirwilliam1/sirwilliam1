@@ -1,0 +1,45 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures standard users are automatically denied elevation requests, and ensures correct accounts are used on the system for privileged tasks to help mitigate credential theft.
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-09
+    Last Modified   : 2025-09-09
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-SO-000255
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-SO-000255.ps6 
+#>
+
+# Define registry path and value details
+$registryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
+$valueName = "ConsentPromptBehaviorUser"
+$valueData = 0
+
+# Check if the registry path exists
+if (-not (Test-Path $registryPath)) {
+    Write-Host "Registry path does not exist. Creating it..."
+    New-Item -Path $registryPath -Force | Out-Null
+}
+
+# Set the registry value
+Set-ItemProperty -Path $registryPath -Name $valueName -Value $valueData -Type DWord
+
+# Confirm the change
+$currentValue = Get-ItemProperty -Path $registryPath -Name $valueName
+Write-Host "Registry key set successfully:"
+Write-Host "$valueName = $($currentValue.$valueName)"
