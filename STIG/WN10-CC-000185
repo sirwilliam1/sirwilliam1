@@ -38,3 +38,4 @@ New-ItemProperty -Path $registryPath -Name "NoAutorun" -Value 1 -PropertyType DW
 
 # Confirm the change
 Get-ItemProperty -Path $registryPath | Select-Object NoAutorun
+
