@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    This PowerShell script the registry key is created and configured correctly, so Users will be prompted for a password on resume from sleep (on battery).
+    This PowerShell script ensures the registry key is created and configured correctly, so uers will be prompted for a password on resume from sleep (on battery).
 
 .NOTES
     Author          : Sir William
