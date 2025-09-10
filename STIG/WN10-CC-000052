@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    This PowerShell script ensures Windows 10 is configured to prioritize ECC Curves with longer key lengths first. Requiring ECC curves with longer key lengths to be prioritized first helps ensure more secure algorithms are used.
+    This PowerShell script ensures Windows 10 is configured to prioritize ECC Curves with longer key lengths first. Requiring ECC curves with longer key lengths to be prioritized, first helps ensure more secure algorithms are used.
 
 .NOTES
     Author          : Sir William
