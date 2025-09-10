@@ -1,0 +1,42 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures that PowerShell Transcription must be enabled on Windows 10; so detailed information from the processing of PowerShell commands and scripts can be recorded. This can provide additional detail when malware has run on a system.
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-10
+    Last Modified   : 2025-09-10
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-CC-000327
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-CC-000327.ps8
+#>
+
+# Define registry path and value
+$registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription"
+$valueName = "EnableTranscripting"
+$valueData = 1
+
+# Create the registry key if it doesn't exist
+if (-not (Test-Path $registryPath)) {
+    New-Item -Path $registryPath -Force | Out-Null
+}
+
+# Set the registry value
+Set-ItemProperty -Path $registryPath -Name $valueName -Value $valueData -Type DWord
+
+# Confirm the change
+Write-Host "PowerShell Transcription has been enabled successfully." -ForegroundColor Green
