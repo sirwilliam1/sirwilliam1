@@ -1,0 +1,45 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures Windows 10 is configured to audit MPSSVC Rule-Level Policy Change Failures. Maintaining an audit trail of system activity logs can help identify configuration errors, troubleshoot service disruptions, and analyze compromises that have occurred, as well as detect attacks. 
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-10
+    Last Modified   : 2025-09-10
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-AU-000580
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-AU-000580.ps20
+#>
+
+# Ensure script runs with administrative privileges
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
+    [Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Warning "You must run PowerShell as Administrator."
+    break
+}
+
+# Step 1: Enable subcategory override (WN10-SO-000030)
+$lsaPath = "HKLM:\System\CurrentControlSet\Control\Lsa"
+$overrideName = "SCENoApplyLegacyAuditPolicy"
+$overrideValue = 1
+
+Set-ItemProperty -Path $lsaPath -Name $overrideName -Value $overrideValue -Type DWord
+Write-Host "Enabled subcategory override for audit policy."
+
+# Step 2: Enable failure auditing for MPSSVC Rule-Level Policy Change
+auditpol /set /subcategory:"MPSSVC Rule-Level Policy Change" /failure:enable
+Write-Host "Audit policy for 'MPSSVC Rule-Level Policy Change' failures has been enabled."
