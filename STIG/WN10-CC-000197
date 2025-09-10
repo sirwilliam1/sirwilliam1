@@ -1,0 +1,40 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures Microsoft consumer experiences must be turned off; will help prevent the unwanted installation of suggested applications.
+
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-10
+    Last Modified   : 2025-09-10
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-CC-000197
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-CC-000197.ps13
+#>
+
+# Define the registry path
+$regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
+
+# Create the registry key if it doesn't exist
+if (-not (Test-Path $regPath)) {
+    New-Item -Path $regPath -Force
+}
+
+# Set the DisableWindowsConsumerFeatures value to 1 (REG_DWORD)
+New-ItemProperty -Path $regPath -Name "DisableWindowsConsumerFeatures" -Value 1 -PropertyType DWord -Force
+
+Write-Output "Microsoft consumer experiences have been successfully disabled."
