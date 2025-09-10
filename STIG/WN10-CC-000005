@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    This PowerShell script sets a requiring logon will ensure the device is only used by authorized personnel..
+    This PowerShell script sets the logon requirement to ensure the device is only used by authorized personnel..
 
 .NOTES
     Author          : Sir William
