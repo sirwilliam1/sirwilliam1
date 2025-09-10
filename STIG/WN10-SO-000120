@@ -1,0 +1,40 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures the Windows SMB server must be configured to always perform SMB packet signing, aid in preventing man-in-the-middle attacks.
+
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-10
+    Last Modified   : 2025-09-10
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-SO-000120
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-SO-000120.ps14
+#>
+
+# Define the registry path
+$regPath = "HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters"
+
+# Create the registry key if it doesn't exist
+if (-not (Test-Path $regPath)) {
+    New-Item -Path $regPath -Force
+}
+
+# Set the RequireSecuritySignature value to 1 (REG_DWORD)
+New-ItemProperty -Path $regPath -Name "RequireSecuritySignature" -Value 1 -PropertyType DWord -Force
+
+Write-Output "SMB packet signing has been successfully enforced on the server."
