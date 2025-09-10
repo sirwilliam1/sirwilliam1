@@ -1,0 +1,48 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures Windows 10 is configured to prevent Windows apps from being activated by voice while the system is locked; mitigating unauthorized use.
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-10
+    Last Modified   : 2025-09-10
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-CC-000365
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-CC-000365.ps9
+#>
+
+# Define registry path and values
+$registryPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy"
+$primaryValueName = "LetAppsActivateWithVoiceAboveLock"
+$alternateValueName = "LetAppsActivateWithVoice"
+$desiredValue = 2
+
+# Create the registry key if it doesn't exist
+if (-not (Test-Path $registryPath)) {
+    New-Item -Path $registryPath -Force | Out-Null
+}
+
+# Check if alternate value exists and is already set to 2
+$alternateValue = Get-ItemProperty -Path $registryPath -Name $alternateValueName -ErrorAction SilentlyContinue
+
+if ($alternateValue.$alternateValueName -eq $desiredValue) {
+    Write-Host "Alternate registry value '$alternateValueName' is already set to 2. No action needed." -ForegroundColor Yellow
+} else {
+    # Set the primary value to 2
+    Set-ItemProperty -Path $registryPath -Name $primaryValueName -Value $desiredValue -Type DWord
+    Write-Host "'$primaryValueName' has been set to 2 to prevent voice activation above lock screen." -ForegroundColor Green
+}
