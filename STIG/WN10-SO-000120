@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    This PowerShell script ensures the Windows SMB server must be configured to always perform SMB packet signing, aid in preventing man-in-the-middle attacks.
+    This PowerShell script ensures the Windows SMB server must be configured to always perform SMB packet signing, aiding in preventing man-in-the-middle attacks.
 
 
 .NOTES
