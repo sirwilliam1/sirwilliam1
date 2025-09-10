@@ -1,0 +1,42 @@
+<#
+.SYNOPSIS
+    This PowerShell script the registry key is created and configured correctly, so Users will be prompted for a password on resume from sleep (on battery).
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-09
+    Last Modified   : 2025-09-09
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-CC-000030
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-CC-000030.ps7
+#>
+
+# Define registry path and value
+$registryPath = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters"
+$valueName = "EnableICMPRedirect"
+$valueData = 0
+
+# Check if the value exists
+if (Get-ItemProperty -Path $registryPath -Name $valueName -ErrorAction SilentlyContinue) {
+    # Update the value if it exists
+    Set-ItemProperty -Path $registryPath -Name $valueName -Value $valueData
+    Write-Output "Registry value '$valueName' updated to $valueData."
+} else {
+    # Create the value if it doesn't exist
+    New-ItemProperty -Path $registryPath -Name $valueName -Value $valueData -PropertyType DWord
+    Write-Output "Registry value '$valueName' created with value $valueData."
+}
