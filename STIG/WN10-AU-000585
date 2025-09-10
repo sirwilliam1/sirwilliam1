@@ -1,0 +1,47 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures users are not be allowed to ignore Windows Defender SmartScreen filter warnings for malicious websites in Microsoft Edge. This alerts users they could be accessing malicious websites.
+
+
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-10
+    Last Modified   : 2025-09-10
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-AU-000585
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-AU-000585.ps17
+#>
+
+# Ensure script runs with administrative privileges
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
+    [Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Warning "You must run PowerShell as Administrator."
+    break
+}
+
+# Step 1: Enable subcategory override
+$regPath = "HKLM:\System\CurrentControlSet\Control\Lsa"
+$regName = "SCENoApplyLegacyAuditPolicy"
+$regValue = 1
+
+Set-ItemProperty -Path $regPath -Name $regName -Value $regValue -Type DWord
+Write-Host "Enabled subcategory override for audit policy (WN10-SO-000030)."
+
+# Step 2: Enable auditing for File Share Success
+auditpol /set /subcategory:"File Share" /success:enable
+Write-Host "Audit policy for 'File Share' success events has been enabled."
