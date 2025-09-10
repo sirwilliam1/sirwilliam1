@@ -1,0 +1,99 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures the password history must be configured to 24 passwords remembered.
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-10
+    Last Modified   : 2025-09-10
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-AC-000020 
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-AC-000020.ps21
+#>
+
+<#
+.SYNOPSIS
+  Configure "Enforce password history" to 24 and verify the effective value.
+
+.NOTES
+  - Run PowerShell ISE as Administrator.
+  - This configures the local account policy (local machine). Domain controllers / domain GPOs must be configured via Group Policy on the domain.
+#>
+
+# Ensure running elevated
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
+    [Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Error "This script must be run as Administrator. Right-click PowerShell ISE and select 'Run as administrator'."
+    break
+}
+
+try {
+    $desired = 24
+
+    Write-Host "Setting Enforce password history to $desired (local policy) using 'net accounts'..."
+    & net accounts /uniquepw:$desired 2>&1 | Out-Null
+
+    # Allow a short pause for policy application
+    Start-Sleep -Seconds 2
+
+    # Export effective local security policy to a temporary INF file
+    $tmpInf = Join-Path $env:TEMP "secpol_export_$(Get-Random).inf"
+
+    Write-Host "Exporting effective local security policy to: $tmpInf"
+    $seceditArgs = "/export /areas SECURITYPOLICY /cfg `"$tmpInf`""
+    $seceditResult = Start-Process -FilePath secedit.exe -ArgumentList $seceditArgs -NoNewWindow -Wait -PassThru
+
+    if (-not (Test-Path $tmpInf)) {
+        throw "Failed to export local security policy (secedit export did not produce the INF). Check logs or run secedit manually."
+    }
+
+    # Read and parse PasswordHistorySize from the [System Access] section
+    $infText = Get-Content -Path $tmpInf -Raw -ErrorAction Stop
+
+    # Try to find PasswordHistorySize line (format: PasswordHistorySize = <number>)
+    $match = [regex]::Match($infText, '^\s*PasswordHistorySize\s*=\s*(\d+)\s*$', [System.Text.RegularExpressions.RegexOptions]::Multiline)
+
+    if ($match.Success) {
+        $effective = [int]$match.Groups[1].Value
+        Write-Host "Effective PasswordHistorySize parsed from exported policy: $effective"
+
+        if ($effective -ge $desired) {
+            Write-Host "SUCCESS: Enforce password history is set to $effective (meets requirement of $desired)."
+            $status = $true
+        } else {
+            Write-Warning "NON-COMPLIANT: Effective value ($effective) is less than required ($desired)."
+            $status = $false
+        }
+    } else {
+        Write-Warning "Could not find 'PasswordHistorySize' in the exported security policy. The setting may be stored in SAM or managed by domain GPO."
+        $effective = $null
+        $status = $false
+    }
+
+    # Also show 'net accounts' output to the admin for direct confirmation
+    Write-Host "`nCurrent 'net accounts' summary (for local policy):"
+    & net accounts
+
+    # Clean up temp file (optional)
+    # Remove-Item -Path $tmpInf -ErrorAction SilentlyContinue
+
+    if ($status) { exit 0 } else { exit 1 }
+}
+catch {
+    Write-Error "Error: $_"
+    exit 2
+}
