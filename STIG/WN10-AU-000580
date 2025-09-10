@@ -26,7 +26,7 @@
 #>
 
 # Ensure script runs with administrative privileges
-if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
     [Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Write-Warning "You must run PowerShell as Administrator."
     break
@@ -37,9 +37,21 @@ $lsaPath = "HKLM:\System\CurrentControlSet\Control\Lsa"
 $overrideName = "SCENoApplyLegacyAuditPolicy"
 $overrideValue = 1
 
-Set-ItemProperty -Path $lsaPath -Name $overrideName -Value $overrideValue -Type DWord
+# Ensure registry path exists
+if (-not (Test-Path $lsaPath)) {
+    New-Item -Path $lsaPath -Force | Out-Null
+}
+
+# Create or update registry value properly
+if (Get-ItemProperty -Path $lsaPath -Name $overrideName -ErrorAction SilentlyContinue) {
+    Set-ItemProperty -Path $lsaPath -Name $overrideName -Value $overrideValue
+} else {
+    New-ItemProperty -Path $lsaPath -Name $overrideName -Value $overrideValue -PropertyType DWord -Force | Out-Null
+}
+
 Write-Host "Enabled subcategory override for audit policy."
 
 # Step 2: Enable failure auditing for MPSSVC Rule-Level Policy Change
 auditpol /set /subcategory:"MPSSVC Rule-Level Policy Change" /failure:enable
 Write-Host "Audit policy for 'MPSSVC Rule-Level Policy Change' failures has been enabled."
+
