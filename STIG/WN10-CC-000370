@@ -1,0 +1,42 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures the convenience PIN for Windows 10 must be disabled, prevent enabling (Password Stuffer).
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-10
+    Last Modified   : 2025-09-10
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-CC-000370 
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-CC-000370.ps10
+#>
+
+# Define registry path and value
+$registryPath = "HKLM:\Software\Policies\Microsoft\Windows\System"
+$valueName = "AllowDomainPINLogon"
+$valueData = 0
+
+# Create the registry key if it doesn't exist
+if (-not (Test-Path $registryPath)) {
+    New-Item -Path $registryPath -Force | Out-Null
+}
+
+# Set the registry value to disable domain PIN logon
+Set-ItemProperty -Path $registryPath -Name $valueName -Value $valueData -Type DWord
+
+# Confirm the change
+Write-Host "Convenience PIN for domain logon has been disabled." -ForegroundColor Green
