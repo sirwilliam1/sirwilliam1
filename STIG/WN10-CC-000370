@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    This PowerShell script ensures the convenience PIN for Windows 10 must be disabled, prevent enabling (Password Stuffer).
+    This PowerShell script ensures the convenience PIN for Windows 10 must be disabled, to prevent enabling of (Password Stuffer).
 
 .NOTES
     Author          : Sir William
