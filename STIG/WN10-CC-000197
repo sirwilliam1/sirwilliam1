@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    This PowerShell script ensures Microsoft consumer experiences must be turned off; will help prevent the unwanted installation of suggested applications.
+    This PowerShell script ensures Microsoft consumer experiences will be turned off; helping to prevent the unwanted installation of suggested applications.
 
 
 .NOTES
