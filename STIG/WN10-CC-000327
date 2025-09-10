@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    This PowerShell script ensures that PowerShell Transcription must be enabled on Windows 10; so detailed information from the processing of PowerShell commands and scripts can be recorded. This can provide additional detail when malware has run on a system.
+    This PowerShell script ensures that PowerShell Transcription is enabled on Windows 10; so detailed information from the processing of PowerShell commands and scripts can be recorded. This can provide additional detail when malware has run on a system.
 
 .NOTES
     Author          : Sir William
