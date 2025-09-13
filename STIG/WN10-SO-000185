@@ -1,0 +1,42 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures that PKU2U authentication using online identities must be prevented. PKU2U is a peer-to-peer authentication protocol. This setting prevents online identities from authenticating to domain-joined systems. Authentication will be centrally managed with Windows user accounts.
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-13
+    Last Modified   : 2025-09-13
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-SO-000185 
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-SO-000185.ps28
+#>
+
+# Define registry path and value
+$registryPath = "HKLM:\SYSTEM\CurrentControlSet\Control\LSA\pku2u"
+$valueName = "AllowOnlineID"
+$valueData = 0
+
+# Check if the registry path exists
+if (-not (Test-Path $registryPath)) {
+    # Create the registry key if it doesn't exist
+    New-Item -Path $registryPath -Force | Out-Null
+}
+
+# Set the registry value
+New-ItemProperty -Path $registryPath -Name $valueName -Value $valueData -PropertyType DWord -Force
+
+Write-Output "Registry key WN10-SO-000185 has been successfully configured."
