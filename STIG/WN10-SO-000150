@@ -1,0 +1,42 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures that Anonymous enumeration of shares must be restricted. Allowing anonymous logon users (null session connections) to list all account names and enumerate all shared resources can provide a map of potential points to attack the system.
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-13
+    Last Modified   : 2025-09-13
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-SO-000150
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-SO-000150.ps31
+#>
+
+# Define registry path and value
+$registryPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa"
+$valueName = "RestrictAnonymous"
+$valueData = 1
+
+# Check if the registry path exists
+if (-not (Test-Path $registryPath)) {
+    Write-Output "Registry path not found: $registryPath"
+    exit
+}
+
+# Set the registry value
+New-ItemProperty -Path $registryPath -Name $valueName -Value $valueData -PropertyType DWord -Force
+
+Write-Output "Registry key WN10-SO-000150 has been successfully configured."
