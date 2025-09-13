@@ -25,17 +25,20 @@
     PS C:\> .\STIG-ID-WN10-00-000090.ps29
 #>
 
-# Get all local user accounts
-$users = Get-LocalUser | Where-Object { $_.Enabled -eq $true -and $_.SID -like "S-1-5-21-*" }
+# Get all local enabled user accounts (excluding system/service accounts)
+$users = Get-LocalUser | Where-Object { 
+    $_.Enabled -eq $true -and $_.SID -like "S-1-5-21-*" 
+}
 
 foreach ($user in $users) {
     # Check if 'PasswordNeverExpires' is set
-    if ($user.PasswordNeverExpires) {
+    if ($user.PasswordNeverExpires -eq $true) {
         Write-Output "Updating account: $($user.Name)"
-        
-        # Set 'PasswordNeverExpires' to false
-        Set-LocalUser -Name $user.Name -PasswordNeverExpires $false
-    } else {
+
+        # Set 'PasswordNeverExpires' to false (so password expires normally)
+        Set-LocalUser -Name $user.Name -PasswordNeverExpires:$false
+    }
+    else {
         Write-Output "Account $($user.Name) already requires password expiration."
     }
 }
