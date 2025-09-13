@@ -1,0 +1,41 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures that Accounts must be configured to require password expiration. Passwords that do not expire increase exposure with a greater probability of being discovered or cracked.
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-13
+    Last Modified   : 2025-09-13
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-00-000090
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-00-000090.ps29
+#>
+
+# Get all local user accounts
+$users = Get-LocalUser | Where-Object { $_.Enabled -eq $true -and $_.SID -like "S-1-5-21-*" }
+
+foreach ($user in $users) {
+    # Check if 'PasswordNeverExpires' is set
+    if ($user.PasswordNeverExpires) {
+        Write-Output "Updating account: $($user.Name)"
+        
+        # Set 'PasswordNeverExpires' to false
+        Set-LocalUser -Name $user.Name -PasswordNeverExpires $false
+    } else {
+        Write-Output "Account $($user.Name) already requires password expiration."
+    }
+}
