@@ -1,0 +1,44 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures the Windows SMB client must be configured to always perform SMB packet signing. Digitally signed SMB packets aid in preventing man-in-the-middle attacks.
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-13
+    Last Modified   : 2025-09-13
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-SO-000100 
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-SO-000100.ps22
+#>
+
+# Define registry path and value
+$registryPath = "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters"
+$valueName = "RequireSecuritySignature"
+$valueData = 1
+
+# Check if the registry path exists
+if (-not (Test-Path $registryPath)) {
+    Write-Output "Registry path does not exist. Creating path..."
+    New-Item -Path $registryPath -Force | Out-Null
+}
+
+# Set the registry value
+Set-ItemProperty -Path $registryPath -Name $valueName -Value $valueData -Type DWord
+
+# Confirm the change
+$currentValue = Get-ItemProperty -Path $registryPath -Name $valueName
+Write-Output "Registry key '$valueName' set to: $($currentValue.$valueName)"
