@@ -28,15 +28,19 @@
 # Check if IE11 is installed
 $ieFeature = Get-WindowsOptionalFeature -Online -FeatureName Internet-Explorer-Optional-amd64
 
-if ($ieFeature.State -eq "Enabled") {
-    Write-Output "Internet Explorer 11 is currently enabled. Disabling now..."
+switch ($ieFeature.State.ToString()) {
+    "Enabled" {
+        Write-Output "Internet Explorer 11 is currently enabled. Disabling now..."
 
-    # Disable IE11
-    Disable-WindowsOptionalFeature -Online -FeatureName Internet-Explorer-Optional-amd64 -NoRestart
+        # Disable IE11
+        Disable-WindowsOptionalFeature -Online -FeatureName Internet-Explorer-Optional-amd64 -NoRestart
 
-    Write-Output "Internet Explorer 11 has been disabled. A system restart may be required."
-} elseif ($ieFeature.State -eq "Disabled") {
-    Write-Output "Internet Explorer 11 is already disabled."
-} else {
-    Write-Output "Internet Explorer 11 feature state: $($ieFeature.State)"
+        Write-Output "Internet Explorer 11 has been disabled. A system restart may be required."
+    }
+    "Disabled" {
+        Write-Output "Internet Explorer 11 is already disabled."
+    }
+    default {
+        Write-Output "Internet Explorer 11 feature state: $($ieFeature.State)"
+    }
 }
