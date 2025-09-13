@@ -1,0 +1,42 @@
+<#
+.SYNOPSIS
+    This PowerShell script ensures that Internet Explorer must be disabled for Windows 10. Internet Explorer 11 (IE11) is no longer supported on Windows 10 semi-annual channel.
+
+.NOTES
+    Author          : Sir William
+    LinkedIn        : linkedin.com/in/-----------/
+    GitHub          : https://github.com/sirwilliam1
+    Date Created    : 2025-09-13
+    Last Modified   : 2025-09-13
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN10-CC-000391
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Put any usage instructions here.
+    Example syntax:
+    PS C:\> .\STIG-ID-WN10-CC-000391.ps25
+#>
+
+# Check if IE11 is installed
+$ieFeature = Get-WindowsOptionalFeature -Online -FeatureName Internet-Explorer-Optional-amd64
+
+if ($ieFeature.State -eq "Enabled") {
+    Write-Output "Internet Explorer 11 is currently enabled. Disabling now..."
+
+    # Disable IE11
+    Disable-WindowsOptionalFeature -Online -FeatureName Internet-Explorer-Optional-amd64 -NoRestart
+
+    Write-Output "Internet Explorer 11 has been disabled. A system restart may be required."
+} elseif ($ieFeature.State -eq "Disabled") {
+    Write-Output "Internet Explorer 11 is already disabled."
+} else {
+    Write-Output "Internet Explorer 11 feature state: $($ieFeature.State)"
+}
