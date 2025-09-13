@@ -27,20 +27,14 @@
 
 <#
 .SYNOPSIS
-    Check and disable Internet Explorer 11 on Windows 10 Semi-Annual Channel.
+    DISA STIG WN10-CC-000391 Compliance Check and Remediation
 
 .DESCRIPTION
-    - Verifies whether IE11 is installed/enabled.
-    - If IE11 is enabled, logs this as a finding and disables it.
-    - If IE11 is disabled or not present, logs compliance.
-    - Also validates registry keys for DISA STIG/lifecycle compliance.
-
-.REFERENCE
-    https://learn.microsoft.com/en-us/lifecycle/faq/internet-explorer-microsoft-edge#what-is-the-lifecycle-policy-for-internet-explorer-
+    - Checks if IE11 is installed/enabled.
+    - If enabled, logs a finding and disables IE11.
+    - If disabled, logs compliance.
 #>
 
-# Registry path used for feature state tracking
-$regPath = "HKLM:\SOFTWARE\Microsoft\Internet Explorer"
 $featureName = "Internet-Explorer-Optional-amd64"
 
 Write-Output "Checking Internet Explorer 11 installation state..."
@@ -49,45 +43,22 @@ try {
     $ieFeature = Get-WindowsOptionalFeature -Online -FeatureName $featureName -ErrorAction Stop
 }
 catch {
-    Write-Output "Feature $featureName not found. IE11 may not be present on this system."
-    $ieFeature = $null
+    Write-Output "Feature $featureName not found. IE11 is not present on this system."
+    exit 0
 }
 
-if ($ieFeature) {
-    switch ($ieFeature.State.ToString()) {
-        "Enabled" {
-            Write-Warning "FINDING: Internet Explorer 11 is currently ENABLED."
+switch ($ieFeature.State.ToString()) {
+    "Enabled" {
+        Write-Warning "FINDING: Internet Explorer 11 is ENABLED. Remediating now..."
 
-            # Disable IE11
-            Disable-WindowsOptionalFeature -Online -FeatureName $featureName -NoRestart -ErrorAction SilentlyContinue
+        Disable-WindowsOptionalFeature -Online -FeatureName $featureName -NoRestart -ErrorAction SilentlyContinue
 
-            Write-Output "Internet Explorer 11 has been disabled. A restart may be required."
-        }
-        "Disabled" {
-            Write-Output "PASS: Internet Explorer 11 is already disabled."
-        }
-        default {
-            Write-Output "Internet Explorer 11 feature state: $($ieFeature.State)"
-        }
+        Write-Output "Internet Explorer 11 has been disabled. A restart may be required for full effect."
     }
-}
-
-# Registry validation for lifecycle / compliance check
-if (Test-Path $regPath) {
-    $ieVersion = (Get-ItemProperty -Path $regPath -Name svcVersion -ErrorAction SilentlyContinue).svcVersion
-    if ($ieVersion) {
-        Write-Output "Registry reports Internet Explorer version: $ieVersion"
-        if ($ieFeature.State -eq "Enabled") {
-            Write-Warning "FINDING: IE11 registry key exists and feature is enabled on unsupported OS."
-        }
-        else {
-            Write-Output "Registry key exists but feature is disabled."
-        }
+    "Disabled" {
+        Write-Output "PASS: Internet Explorer 11 is already disabled. System is compliant."
     }
-    else {
-        Write-Output "No Internet Explorer version found in registry."
+    default {
+        Write-Output "Internet Explorer 11 feature state: $($ieFeature.State)"
     }
-}
-else {
-    Write-Output "Internet Explorer registry path not present. Likely fully removed."
 }
